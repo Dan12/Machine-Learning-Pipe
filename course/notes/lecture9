@@ -65,5 +65,22 @@ Bayesian interperitation of weight decay
     -p(D|W) = product over all training cases of the probability of producing the target value given the weights
     -maximize the sums of log probabilities
     -cost: -logp(W)-logp(D|W)+logp(D)
-    -minimizing the squared wegiths is equivalent to maximizing the log probability of the weights under a zero mean gaussian prior
-    
+    -minimizing the squared weigths is equivalent to maximizing the log probability of the weights under a zero mean gaussian prior
+    -C = E (squared error) + sigma D^2/sigma W^2 * sum(weights^2)
+    -ratios of the gaussian variances are the weight decay parameter
+MacKay's method to determine weight costs
+    -doesn't require a validation set
+    -after learning a model that minimizes the squared error, find the best value for the output noise
+        -best value maximizes the probability of producing correct answers after adding noise to the output
+        -best value is found by using the variance of the residual errors
+    -guess a variance for the weight prior and do empirical bayes
+        -set the variance of the prior to the variance of the weights that the model learned
+        -using the data to decide the prior beliefs
+        -could learn different variances for different sets of weights
+    -method:
+        -guess a ratio
+        -do some learning using that ratio
+        -reset the noise variance to be the variance of the residual errors
+        -reset the weight prior variance to be the variance of the distribution of the learned weights
+        -do this in a loop
+    -Since that input unit contains no useful information, we expect the error derivative to be small. The Gaussian weight prior will always push the weights towards zero unless it is opposed by the error derivative.

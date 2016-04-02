@@ -1,0 +1,64 @@
+Combining Models
+    -better trade off between fitting the true regularities and underfitting the sampling error
+    -helps most when models make very different predictions
+    -regression->squared error decomposed into bias and variance
+        -bias is big if model has little capacity and variance is big if model has a lot of capacity and is fitting the sampling error
+    -Averaging away the variance by using models with low bias so we get low bias and variance
+    -individual vs. average
+        -some individuals may be better at a single test case
+        -if individual predictors disagree, combined predictor is better
+    -squared error of random model is greater than average by the variance of the outputs of the models
+    -use different number of hidden units/layers, different types of units, different weight penalties, different learning algorithms
+    -Bagging: train different models on different subsets of the data
+    -boosting: train low capacity models and weight the training cases differently (up-weights cases that previous models got wrong)
+Mixture of Experts
+    -train a number of specialization nets
+    -make good use of very large datasets
+    -look at the input data to help us decide which model to rely on
+    -models can sepcialize on a subset of the data
+    -make a model that is already doing better than the others better at predicting those values
+    -local and global models (depend on all data of subset of the data)
+    -in the middle: multiple local models of intermediate complexity
+    -how to partition the dataset into different regimes
+    -cluser the training data into subsets of data that are well-modeled by a local model, not by similar input vectors (find similar mappings of input to output)
+    -encourage cooperation: compare the average of all the predictors to the target and train the predictors to reduce the difference between the target and their average
+    -error function for specialization: compare the output of each model seperately to the target, use a manager to determine the probability of picking each expert
+        -most of the experts will end up ignoring most of the targets
+    -E = sum(p(t-y)^2), bad experts assigned low probability by the manager and don't contribute much to the average
+    -dE/dy=p*(t-y)
+    -dE/dx=p((t-y)^2-E)
+    -manager scales the gaussians of the experts using a mixing proportion
+    -maximize the log probability of the targert value under the mixture of gaussians
+Full Bayesian Learning
+    -find the full posterior distribution over all settings
+    -let each setting of the parameters make its own prediction, combine those predictions by weighting them by the posterior probability of that weight setting
+    -allows complicated models without much data
+    -approximate full Bayesian learning in a nn with a few parameters
+        -put a grid over the parameter space, evaluate p(W|D) at each point
+        -just evaluating a set of points in the space, more expensive but works better that ML when data is scarce
+Making full Bayesian learning practical
+    -if there is enough data, most paramter vectors are unlikely, only a tiny fraction of the grid points contribute to the predictions
+    -sample weight vectors according to their posterior probabilities
+    -as we move down the error surface, add gaussian noise to the weight vector, weight vector never settles down
+        -it will wander over the space but tend to go downhill (low cost regions)
+    -Markov Chain Monte Carlo
+        -use a right amount of noise to get unbiased samples that are very likely under the posterior
+    -mini-batches: gradient is estimate with sampling noise, use the noise for the MCMC
+Dropout
+    -randomly omit hidden units so we end up with a different architecutre for each training case
+        -different model with each training case
+    -Combine models
+        -mixture: combine average of the probabilities
+        -product: geometric mean of the probabilities and normalize
+    -Dropout
+        -every training case randomly omit each hidden unit w/ probability of .5
+        -sampling from 2^H architecutres with shared weights
+        -model averaging with one training example
+        -weight sharing strongly regularizes the model, pulls the weights towards the correct value
+        -at test time: use all hidden units, halve their outgoing weights
+    -dropout in input layer: higher probability of keeping the input unit
+    -deep nn that is overfitting, dropout usually reduces error a lot
+    -a hidden unit adapts other hidden units to help it on the training data
+        -dropout makes it more likely that a hidden unit does something more individualy useful
+        -something that is marginally useful given what its coworkers achieve
+    
