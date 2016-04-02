@@ -1,0 +1,28 @@
+Neural Network Architecture
+    -feed forward: inputs, outputs, hidden; compute a new representation of the input in each layer
+    -recurrent: cycles in their connected graph, complicated dynamics, biologically realistic, natural way to model sequential data (use same weights at every time step)
+        -Ilya Sutskever trained recurrent nn to predict the next character in a sequence (generate a probability distribution for the next character)
+    -Symmetrically connected nn: same weights in both directions, restricted in what they can do, easier to analyze than recurrent nn, Hopfield
+Perceptrons
+    -Pattern recognition: convert input to vector of feature activations (hand-coded), learn how to weight the feature activations to get a scalar, if scalar above threshold input vector is positive example of class
+    -Frank rosenblatt: grand claims, turned out to be false, Minsky and Papert (1969): book that showed the limitations of perceptrons
+    -Binary threshold neuron w/ bias
+    -Treat bias just like weights, use a one as the input and multiply it by the bias when computing weighted sum w/ bias
+    -Perceptron convergence procedure
+        -use bias so you can forget about the threshold
+        -is output is correct, leave the weights alone
+        -output incorrectly outputs a 0, add input vector, vis versa for a 1
+        -guaranteed to find the set of weights that gets the right answer IF such a set exists
+Perceptron geometrical view
+    -Weight space: 1 dimenstion for each weight
+    -point in the space represents a setting of the weights
+    -Each training case is a hyperplane through the origin
+    -The weights must lie on one side of that hyperplane in order to get it right
+    -A cone of possible weight vectors, move the weight vector around until it lies in the cone, the average of two solutions is a solution
+Limiations of perceptrons
+    -stem from the kinds of features that you use; if you use the right features you can do almost anything
+    -Binary input vectors can learn anything, a feature vector for every possible case, doesn't generalize
+    -Can't solve XOR problem, give four inequalities that are impossible to solve, not linearly seperable
+    -Recognize a pattern even when it is translated with wrap-around
+    -You have to organize the features to do all of the difficult work (hand crafted features), have to learn feature detectors
+    

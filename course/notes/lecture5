@@ -1,0 +1,46 @@
+Object Recognition Difficulty
+    -Segmentation: remove an object from the background
+    -Parts of objects can be obscured
+    -Lighting: intensities of the pixels are determined by lighting as much as by the object
+    -Deformation: objects can deform in many ways
+    -Affordances: object class is defined by what it is for (chair: something you sit on)
+    -Viewpoint: variety of viewpoints give different images of the same object
+        -Dimension hopping: information sometimes hops to a different dimension than what normally codes it
+        -First eliminate dimension hopping before learning
+Viewpoint invariance
+    -Use redundant invarient features
+        -invarient under translation, rotation, ect.
+    -Put a box around the object and normalize the pixels
+        -solves the dimension-hopping problem
+        -choosing box is difficult (segmentation errors, occlusion)
+    -Use replicated features with pooling (Convolutional NN)
+    -Have a hierarchy of parts with poses relative to the camera
+Convolutional Networks
+    -based on replicated features
+    -a feature detector useful in one position is likely useful in other position
+    -Many maps, each with its own feature detector
+    -Backpropegation modification
+        -two weights to be equal: change in w1=change in w2
+            -sum both gradients for w1 and w2
+    -Replicated features achieve equivariant features, invarience in knowledge
+    -Pooling
+        -Averaging 4 neighboring detectors for next layer
+        -Works slightly better to take that maximum
+        -Problem: after doing this several times, you loose information about the precise positions of things
+            -Not critical for object classification
+    -Le Net (Yann LeCun), handwritten digits
+    -Prior knowledge
+        -inject prior knowledge into the network (connectivity, weight constraints, neuron activation functions)
+        -Still prejudices the network towards the particualr way of solving the problem
+    -McNemar test for testing which net does better
+        -Only interested in conflicting errors (one net got it right when the other one got it wrong)
+        -Better net is one where it got the same ones right than the other one more times than vise versa
+CNN for object recognition
+    -ILSVRC-2012 competition: classification task (top 5 bets) and localization task (bounding box 50% correct)
+    -Alex Krizhevsky got a very small error rate
+        -very deep CNN, 7 hidden layers, early convolutional, last two are globally connected
+        -activation functions: rectified linear units, train much faster and are more expressive than logistic units
+        -competative normalization: supress activations when nearby units have stronger activations, helps with variations in intensities
+        -Dropout to regularize: half hidden units in a layer are ommited, stopping too much cooperation between the neurons, prevents overfitting
+    -Vlad Mihn: road detection with CNN
+    

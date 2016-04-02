@@ -1,0 +1,80 @@
+Modeling Sequences
+    -turn once sequence onto another sequence
+    -get it to predict the next term in the input sequence
+    -for temporal sequences there is a natural order for predictions
+    -autoregressive model
+        -predict the next term from a fixed number of previous terms (delay taps)
+    -feed forward neural net
+        -use some hidden units to perdict the next term
+    -Memoryless models
+        -hidden state with own internal dynamics
+        -store information in its hidden state for a long time
+        -can't know the exact hidden state, can infer a probability distribution over the space of hidden state vectors
+    -Allow you to infer the hidden state
+        -linear dynamical system
+            -generative model with real value hidden state
+            -tracking missiles from noisy data
+            -linearly transforming a gaussian gets you another gaussian, can be computed using kalman filtering
+        -hidden markov models
+            -hidden state consists of a one of n choice, system is always in eaxctly one state
+            -transisions between states are stochastic, controlled by the transistion matrix (probabalistic matrix)
+            -cannot be sure which state produced the output so the state is hidden (because of the probabalistic nature)
+            -took over speech recognition in the early days
+    -Recurrent nn
+        -distributed hidden state, remember several different things at once
+        -non linear dynamics
+        -can compute anthing that can be computed by a computer given enough neurons and enough time
+        -linear dynamical systems and hmm are stochastic models
+        -RNNs are deterministic, the hidden state of a RNN is like the probability distribution of a stocastic model
+        -they can oscilate (motor control)
+        -settle to point attractors (retrieving memories)
+        -behave chaotically
+        -potentially learn to implement a lot of small parallel programs
+        -however, they are very hard to train
+RNNs and Backpropegation
+    -time delay of 1 between each connection and that the network runs in discrete time (has an internal clock)
+    -same as feedforward network that keeps reusing the same weights and is a layered feed forward network
+    -modify the gradients to statisfy the constraints (all weights through time are the same, shared weights)
+    -forward pass builds up a stack of activities and backward pass peels the activities off the stack to compute the error derivatives
+    -have to start out at a particular state if there are hidden units
+    -learn initial states the same way as parameters, backprop all the way back to the initial states
+    -specify the intial states of the network
+        -specify all the units at 1 time step
+        -specify the states of the same subset at every time step (natural way to input sequential data)
+    -specify the targets
+        -specify desired final activities of the units
+        -specify the desired activities of all units for the last few steps (learn attractors)
+            -add in derivatives as you backpropegate
+        -specify the desired activity of a subset of units (continuous output)
+Toy RNN
+    -adding two binary numbers
+    -feed forward: have to know the maximum number of digits, process if difficult to generalize
+    -finite state automaton for binary addition, like a markov chain
+    -3 hidden units, fully interconnected
+    -nodes in finite state automaton are like activity vectors
+    -rnn can emulate a finite state automaton, exponentially more powerful
+Difficulty of training RNNs
+    -in forward pass, use squashing functions (logistic) to prevent activity vectors from exploding
+    -backward pass is completely linear, backpropegation is like going through a linear system (Adding derivatives, like linear neuron)
+    -if the weights are small, the gradients shrink exponentially
+    -if the weights are big, the gradients grow exponentially
+    -RNNs trained on long sequences, gradients easily explode or vanish
+    -Effective ways to learn an RNN
+        -Long short term memory: architecture of network makes it good at remembering
+        -Hessian Free Optimization: better optimizer, detect tiny gradients
+        -Echo state networks: carefully initialize the layers so that there are weak oscillators so that information reverberates for a long time in the network
+        -Momentum with good initialization: used with echo state networks
+Long Short Term Memory
+    -dynamic state of RNN is short term, try and make it last longer
+    -Hochreiter and Schmidhuber
+        -memory cell with logistic and linear units
+        -logistic write gate
+        -information stays as long as keep gate is on (logistic)
+        -information read using logistic read gate
+        -cell stores analog value that is constantly written to itself through a linear unit
+        -Backpropegation
+            -error of the output of the cell is backpropegated to the time when it was written into the cell (weights of 1)
+        -reading cursive handwriting (Alex Graves)
+            -input is sequence of (x,y,p) coordinates of pen tip
+            -output is a sequence of characters
+            

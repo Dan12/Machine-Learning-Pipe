@@ -1,0 +1,53 @@
+Why do we need machine learning
+    -Very hard to write programs to solve problems is we don't know how it is done in our brain (not logical)
+    -The program that could be written might be so commplicated
+    -Need a complicated program that combines a lot of unreliable rules that can change over time (credit car fraud)
+    -Instead of writing a program for a specific task, we get a bunch of examples and specify the correct output
+    -The program should work on cases it hasn't seen before
+Best tasks solved by ml
+    -Pattern recognition
+    -Anomaly recognition
+    -Prediction (stock prices, movies)
+MNIST
+    -standard example for machine learning
+    -handwritten digit classifier, very fast to train, many studies done
+ImageNet
+    -1000 different obejct classes, 1.3 million high resolution training images
+Speech Recognition
+    -Preprocessing to convert sound var to vector of acoustic coefficient (every 10 milliseconds)
+Neural Computation
+    -brain is very big and commplicated, use simulations
+    -very large parallel computing because of neuron's connections
+    -brain is used as a source of inspiration that complex things can be computed in a parallel way
+Cortical neuron
+    -spike is generated from a neuron when a charge builds up in cell body
+    -Synapses adapt (learing), they are slow, they are small and low power, they adapt using signals
+    -Don't know how they adapt (the rules)
+    -The cortex is modular
+        -different parts of the brain learn to do differnt things
+        -The cortex looks pretty much the same all over (brain has a very general learning algorithm)
+        -General purpose stuff turns into special purpose hardware in response to experience
+Simplified neurons
+    -linear neuron: output is a function of the bias of the neuron and the sum of the inputs*weights
+    -Binary threshold: computed a weighted sum of inputs, send spike of activitey if sum exceeds threshold
+    -Rectirfied linear neuron: linear weighted sum, outputs z if above zero, 0 otherwise
+    -Logistic Sigmoid neurons: smooth bounded function of the inputs, smooth derivatives
+    -Stochastic binary neurons: same as sigmoid, treat the output as the probability of producing a spike, output a 1 or 0, intrinsically random
+        -rectified linear neuron: treat value as the rate of spikes
+Digit classifier
+    -template won't work, need to extract features and then use those feautures to make guesses on the class of the input
+Types of learning
+    -Supervised learning: predict output when given an input
+        -regression: real number output
+        -classification: class label
+        -minimize the difference between the output of the model and the target output (1/2(y-t)^2)
+    -Reinforcement learning
+        -sequence of actions that lead to a reward in the near future
+        -rewards are delayed, difficult to tell which action led to the reward
+    -Unsupervised learning
+        -create an internal representation of the input that is useful for supervised/reinforcement learning
+        -low dimensional representation of the input (1 million pixels to only a few hundred degrees of freedom)
+        -economical high-dimensional representation of the input
+        -sensible clustering of the inputs
+
+    

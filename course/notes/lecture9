@@ -1,0 +1,69 @@
+Improving Generalization
+    -overfitting: sampling erro, accidental regularities
+    -model fits both regularities, felxible model will fit the sampling error very well
+    -prevent overfitting
+        -get more data, always the best way, core of the reason for sampling error
+        -limit the capacity of the model, enoguh to fit the true regularities and not the samplinng error
+        -Average many different models, errors made in one model will be averaged out by other models
+        -Bayesian: use a single architecture, find many different sets of weights that provide good results and average them on the test data
+    -control capacity
+        -limit hidden layers, controls the number of parameters
+        -early stopping: start with small weights and stop early (find true regularities before overfitting)
+        -weight decay: penalize large weights
+        -noise: add noise to the weights or the activities
+        -combination of all these is good
+    -how to choose meta parameters
+        -wrong way is to try lots of alternatives on test set(false impression of how well the model is doing)
+        -cross validation: divide data into three subsets 
+            -training, validation (used to decide the meta parameters), test (final estimate of how well the network does)
+        -rotate the validation data, get many different estimates
+        -n-fold cross validation, not independent
+    -early stopping
+        -start with small weights, grow as model learns, as soon as performance on the validation set gets wors->stop training
+        -go until you are sure it is always getting worse, then go back to where it started getting worse (fluctuations in the validation data)
+        -models with small weights generally have small capacity
+        -when the weights are small, the model is similar to a linear matrix (for logistic neurons)
+Limiting the size of the weights
+    -assumption that a network with small weights is simpler than a network with large weights
+    -use an L2 weight penalty (penalize the squared value of the weight)
+    -keeps the weight small unless there are big error derivatives
+    -derivative is lambda*weight
+    -L1 penalty: penalize absolute value of the weights
+        -drives many weights to exactly 0, only a few non-zero weights helps with interperitation
+    -Weight constraints
+        -constrian the maximum squared length of the incoming weight vector
+        -scale the vector down by dividing all the elements by the same amount
+        -easier to set a sensible value
+        -penalty is appropriate to the big weights, more effective because it doesn't push unecessary weights down, lagrange multipliers to get the weight vector to a length
+Noise as a Regularizer
+    -add gaussian noise with variance sigma i^2 to the inputs, increases the next output by a gaussian with variance wi^2*sigma i^2
+    -sigma i^2 is equivalent to an L2 penalty
+    -add gaussian noise to the weights can improve performance, especially RNNs
+    -adding noise to the activites: use activity as the probability of ouputing a 1, in backprop: use actual activity
+Full Bayesian approach
+    -always have a prior probability that any event might happen
+    -data give us a likelyhood term that we combine with the prior to give us a posterior distribution
+    -data can overwhelm the prior
+    -coin tossing
+        -know that independent result of head or tail, some probability p
+        -100 tosses and 53 heads, p is .53, maximum likelyhood
+        -is it reasonable to give a single answer
+        -unsure of p, give a probability distribution across possible answers (.5 is likely, 1 is unlikely)
+        -prior: start with a uniform distribution across all values (any p is equally likely)
+        -heads: multiply the prior probability of each parameter by the probability of a head at that value
+            -unnormalized distribution, renormalize so that area is 1 by scaling everything up
+        -tail: multiply the prior probability of each parameter by the probability of a tail at that value, then renormalize
+    -Bayes Theorem: p(D)*p(W|D) = p(D,W) joint probability = p(W)*p(D|W)<-conditional probability (p of D given W)
+        -p(W|D) posterior probability of weight vector W given training data D = p(W) probability of weight vector w * p(D|W) probability of observed data given w / p(D) probability of the data (Normalization, integral over all W of p(W)*p(D|W), sum over all probabilities)
+Bayesian interperitation of weight decay
+    -output of the net is input*weights
+    -probability of the target value given the nets output plus some gaussian noise is given by a gaussian ventered at the output
+    -negative log probability density of t given y is a constant (Normalization) plus (t-y)^2/2*sigma^2
+    -if cost function is a negative log probability, minimizing the squared distance
+    -find the most probable weight vecotr given prior knowledge and weight vector
+        -start with a random weight vector and adjusting it in the dirn that improve p(W|D)
+    -p(D|W) = product over all training cases of the probability of producing the target value given the weights
+    -maximize the sums of log probabilities
+    -cost: -logp(W)-logp(D|W)+logp(D)
+    -minimizing the squared wegiths is equivalent to maximizing the log probability of the weights under a zero mean gaussian prior
+    

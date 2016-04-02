@@ -1,0 +1,83 @@
+Stochastic Gradient Descent (Mini batch)
+    -for multilayered, non-linear nets, the error surface is more complicated
+        -locally, a piece of a quadratic bowl is usually a good appriximation
+    -Direction of steepest descent does not point at the minumum
+    -Large learning rate: sloshing around the ravine
+    -Want to move quickly in dirns with small/consistent gradients and slowly in dirns with big but inconsistent gradients
+    -Stochastic gradient descent
+        -highly redundant dataset, more efficient to compute gradient from a subset of the data (good approximation)
+        -Mini-batches: less computation, compute many gradients in parallel
+        -Mini-batches: need to be balanced for classes (exactly the same number of each type of class)
+        -Full gradient: many clever ways to speed up learning
+    -Basic algorithm:
+        -guess initial learning rate
+            -error keeps getting worse: reduce the learning rate
+            -error falling too slowly: increase the learning rate
+            -small fluctuations when using mini batches because they estimate the gradient
+            -Turn down the error rate near the end of learning (use validation set)
+Bag of tricks for mini-batch
+    -initializing the weights: randomly, size: (sqrt of the fan in)
+    -shift the input so that the whole input data has mean of 0
+        -makes the error surface more like a surface and less like an elogated ellipse (makes gradient descent faster)
+    -scaling the inputs: make each input vector have unit (1) variance, do this for each input feature and not individual cases
+    -decorrelate the input components: principle component analysis, creates circular error surface (gradient always points towards the minimum)
+    -Common problems
+        -large learning rate->very large weights, on a plateau, learning stops and people mistake it for a minumum
+        -classification: error decreases but ends up on a plateau, might think its at a minimum
+    -Be careful about turning down the learning rate, don't turn it down too soon or too much
+    -Ways to speed up mini-batch learning
+        -momentum: use the gradient to accelerate the "ball", remember previous gradients, gradient is used to change the velocity of the "ball"
+        -separate adaptive learning rate for each parameter: if the sign of the gradient keep changing->decrease the learning rate(fluctuating), if consistent->slowly increase the learning rate
+        -rmsprop: divide the learning rate for a weight by the running average of the recent gradients for that weight
+        -use optomization method on full batch learning that takes into account curvature information
+Momentum Method
+    -as soon as it has some velocity it no longer moves in the dirn of steepest descent
+        -want it to get to the minimum->introduce some viscosity
+    -gradients across the ravine cancel out and gradients down the ravine add up
+    -equation: v(t) = viscosity*v(t-1)-e*gradient(t)
+        -delta w(t) = v(T) = viscosity/momentum*delta w(t-1)-e*gradient(t)<-effect of the current gradient
+    -Will reach a terminal velocity
+        -v(infinity) = 1/1-viscosity*(-e*gradient)
+    -begining of learning->large gradients
+        -start with a small momentum and smoothly raise the momentum to the final value
+    -Ilya Sutskever (better momentum)
+        -First make a big jump in the dirn of the previously measured gradient and then measure the gradient and make corrections
+        -Its better to correct a mistake after you made it
+        -Method
+            -make a jump, measure the error, add those two vectors to get an accumulated gradient
+            -attenuate the accumulated gradient by a value (like .9) and move in that direction, then repeat
+            -classic momentum: measure the gradient and, then add that to the previous gradient and make the jump
+Separate adaptive learning rates
+    -Each connection should have its own adaptive learning rate
+    -in a deep net, the appropriate learning rate can vary widely
+    -gradients are much smaller in the initial layers than in the later ones
+    -fan-in of the unit determines the size of the overshoot caused by changing many of the incoming weights to compensate for the same error
+    -use an initial global learning rate and multiply it by and appropriate local gain that is determined for each weight
+    -start with a local gain of 1, increase the local gain if the gradient for that weight doesn't change sign
+    -use small addative increases and multiplicative decreases(t-1)>0->add 0.05, else multiply by .95
+    -important to limit the size of the gains to some reasonable ranges
+    -can be used for large mini-batches so that the change in sign is not due to the sampling error of a mini-batch
+    -combine adaptive learning rates can be combined with momentum
+        -use the agreement in sign with the current gradient and the veolicty to update the gain
+Rmsprop
+    -rprop
+        -full batch learning: deal with gradient variations by only using the sign of the gradient
+            -weight updates are all the same magnitude, helpful or getting out of plateaus
+        -to decide how much to change the weight, just look at the sign of the gradient and an adaptive step size
+        -multiplicatively increase and decrease (smaller increase) if the signs of the last two gradients agree
+        -limit the step size
+        -rprop doesn't work well with mini-batches
+            -violates the central idea behind sgd
+    -rmsprop: mini-batch version of rprop
+        -force the number we divide the step size by to be similar for adjacent mini-batches
+        -keep a moving average of the squared gradient for each weight
+            -ms(w,t) = 0.9ms(w,t-1)+0.1(gradient(t)^2)
+            -divide the gradient by the sqrt(ms(w,t)) to make learning much better
+Other info
+-small datasets or big datasets without much redundancy: full batch method w/ Conjugate gradient or LBFGS
+    -adaptive learning rates/rprop
+-redundant dataset: use mini-batches
+    -LeCun's latest recipe (tried the most differnt ways to get sgd to work well)
+-Tasks differ (not one standard method)
+    -some require very accurate weights, some dont
+    -some have very rare cases (words), different than if input is pixels

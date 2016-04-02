@@ -1,0 +1,9 @@
+package neat;
+
+public class Class1{
+    
+    public static void testmethod(){
+        System.out.println("Test method");
+    }
+    
+}

@@ -1,0 +1,45 @@
+Learning to predict the next word
+    -turn relational information into feature vectors to capture the features of words
+    -Family tree
+        -use realtionships (son, nephew)
+        -create tripples of information
+        -find regularities frommfamily tree triples
+        -NN tries to predict the person given a person and a relationship
+        -Network is forced into a bottleneck to learn features that are useful for predicting the relationship
+        -Different than picture classification: spacial information is important in pictures and not in family trees
+Cognative Science: relationships
+    -feature theory: a concept is a set of semantic features (feature vectors)
+    -structuralist theory: meaning of a concept lies in its realationship to other concepts (relational graph)
+    -A nn can use vectors of features to implement a realational graph
+    -The net can intuit the answer in a forward pass
+    -Still don't know how to implement relational knowledge in a neural network
+        -good theory: distributed representation: many neurons used for each concept and a single neuron is involved in many concepts
+        -many to many mapping between concpets and neurons
+Softmax output
+    -squared error drawbacks
+        -target is 1 and actual is 0.000001, almost no gradient for logistic to fix the error
+        -probabilites of mutually exclusive classes should sum to 1 and we are depriving the network of that knowledge
+    -New cost function: force the outputs to represent a probability distribution across discrete alternatives
+    -Softmax
+        -output of the ith output is e^zi/(sum over all j(e^zj))
+        -nice derivative: y*(1-y)
+    -Cross-entropy cost function
+        -negative log probability of the right answer
+        -The derivative is very steep when the answer is very wrong and balances the fact that the output change is very flat
+        -Derivative: (y-t) (large if very wrong)
+Probabalistic language models
+    -we use the meaning of the utterance to hear the right words
+    -speech recognizers have to know the probabilities of which words come next
+    -Trigram method
+        -count the frequencies of all tripples of words
+        -use the frequencies to make bets on the probability of the next word given the previous two
+        -fails to understand the similarities between word
+        -have to use a feature representation of the semantic and syntactic features of a word
+    -Bengio's model (index of a word to a learned distributed encoding of the word)
+How to deal with large number of outputs of probabalistic models
+    -Serial architecture
+        -previous words and candatite word go in and give a logit score
+        -raise the score of the correct candatite and lower the scores of highest rival
+    -Arrange all words in a binary tree
+    -use past and future context and judging if middle word is the correct word or a random word
+    

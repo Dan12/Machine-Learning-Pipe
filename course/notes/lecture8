@@ -1,0 +1,75 @@
+Hessian Free Optimizer
+    -train RNNs very effectively
+    -how much does the error decrease in a given direction on an error surface before rising again?
+    -assume that the error surface is quadratic bowl
+    -maximum error reduction depends on the ratio of the gradient to the curvature
+    -good direction has high ration of gradient to curvature
+    -Newtons method
+        -gradient isn't really the dirn we want to go in, unless circular
+        -apply a linear transformation that turns ellipses into circles
+        -multiply the gradient vector by the inverse of the curvature matrix (Hessian, function of the weights)
+        -epsilon*H(w)^-1*dE/dw(gradient)
+        -This will jump to the minimum in one step
+        -A million parameters means a Hessian matrix with a trillion terms, infeasable to invert
+    -Curvature matrix
+        -each element specifies how the gradient changes in one dirn as we move in some other dirn d(dE/dwj)/dwi
+        -off-diagonal terms correspond to the twists in the error surface (0 for circular)
+    -gradient for one weight gets messed up by the simultaneous changes of the other weights
+    -deal w/ curvature without inverting a huge matrix
+    -maybe just look at the leading diagonal, those are only a small fraction
+    -approximate the matrix with a matrix of lower rank that caputres the essentials of the curvature matrix
+        -hessian free methods, LBFGS
+    -HF methods: approx H, minimize the error using conjugate gradient, reapproximate H and minimize again
+    -RNNs, important to add penalty for changing activities too much, don't get effects that are too big
+    -Conjugate gradient
+        -tries to minimize in 1 dirn at a time, rather than all dirns at once
+        -take a first step of steepest descent
+        -figure out the new minimization direction conjugate to the previous direction, wont destroy the gradient of the previous direction
+        -gets to the global minimum of an n-dimensional quadratic surface in n steps
+        -after many less than n steps, it has typically gotten very close to the minimum
+        -non-quadratic surfaces can use conjugate gradient very well
+    -HF optimizer
+        -approximates a truly quadratic surface from the non-quadratic surface and uses conjugate gradient for minimization
+Modeling character string (Predict the next character)
+    -character strings instead of words
+        -pre-processing text is big hassle (prefixes and suffixes, morphemes)
+        -words in multiple peices (New York)
+        -Finnish: combine multiple morphemes to create a big words
+    -RNNs
+        -hidden state from t-1 and character add together to get the next hidden state and predict the next character (use a softmax)
+        -backpropegate the softmax to the begining of the string
+    -Use a tree for characters
+        -RNN, use hidden state vector to deal with enormous tree, hidden state vector is tranformed
+        -different nodes can share structure
+    -Multiplicative connections
+        -character determine hidden-to-hidden weight matrix
+        -share parameters for each character weight matrix
+        -factors: group a and group b interact multiplicatively to provide input to group c
+        -multiply the weight vectors for a and b by a and b to get a scalar product, then scale the weight vector for c by that scalar
+        -c = (b'*w)*(a'*u)*v (all vectors)
+HF with multiplicative connections
+    -Ilya Sytskever: strings of 100 characters, starts perdicting at the 11th character, default RNN state
+    -train the model
+    -start with the model in a default state, prefeed characters, look a probability distribution, pick character randomly from that distribution, tell the net that its guess was correct, repeat
+    -model knows about words, knows about numbers, proper names, dates, context
+    -knows about syntax but it is very hard to pin down
+    -weak semantic associations
+    -RNNS require less training data to reach the same level of performance as other models
+    -RNNs improve faster than other models as datasets get bigger
+Echo State Networks
+    -simple way to learn feedforward network: early layers have fixed random weights, only learn the last layer
+        -big random expansion of the input vector can help
+    -Randomly fix RNN layers carefully so that they don't explode or die
+    -Echo state initialization
+        -hidden->hidden weigts so that the length of the activity vector stays about the same after each iteration (spectral radius is 1, biggest eigenvalue is 1)
+        -input can echo around in the network
+        -use sparse connectivity (most weights to 0)
+            -loosely coupled oscillators
+        -chose the scale of input->hidden connections carefully, drive the oscillators without destroying past information
+        -learning is fast so many different scale can be tried out
+    -Good aspect of ESN
+        -can be trained very fast and show importance of weight initialization
+        -do impressive modeling of 1d time series
+        -can't model high dimensional data
+    -Ilya Sutskever
+        -showed that regular RNN initialized using ESN and training in the typical fasion was very effective (rmsprop and momentum)

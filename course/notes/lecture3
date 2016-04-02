@@ -1,0 +1,56 @@
+Learning Weights of a linear network
+    -Show that the outputs get closer to the target values
+        -can be true even for non-vconvex problems
+    -Linear neuron: weighted sum of all inputs
+    -Learning: minimize squared error over all training cases
+    -Standard engineering approach is to write down equations and solve for the best set of weights
+    -Method to generalize to more complex systems (non-linear networks), analyitic method only works because it is linear
+    -Iterative method is less efficient but it generalizes to non linear networks
+    -Method
+        -Start with random guess
+        -adjust guesses to agree better with the output
+        -Delta rule for learning: learning rate (epsilon) * value of input * residual error (target-output)
+        -derivative: x*(t-y)
+        -Error measure: 1/2 * sum over all training cases (t-y)^2
+        -differentiate the error with respect to an individual weights to get the delta for the individual weights
+    -May be no perfect answer but there is an answer that is very close to all the training cases
+    -Online delta-rule: have to chose a learning rate, too large and unstable, too small and no convergence
+Error surface of a linear neuron
+    -linear neuron w/ squared error define a quadratic bowl with error as the height
+    -More complex systems may still have a smooth curve but they will have many local minima
+    -Batch learning does steepest descent on the error surface
+    -Online learning zig-zags around the direction of steepest descent
+    -Learning can be slow because the gradient is big on an elongated ellipse
+Learning for logistic output
+    -Logistic: non linear neuron (sigmoid: 1/1+e^-z)
+    -Logit is b+sum(x*w)
+    -Derivatives: sigmoid: y*(1-y)
+    -Total derivatives: x*(t-y)*y*(1-y), derivative of linear neuron times the derivative of the sigmoid
+Backpropegation
+    -How to learn multiple layers of features (learn the weights of the hidden units)
+    -Learn by perturbing weights (evolution), randomly perturb the weight to see if it imporves performance, save it if it does
+        -Very inefficient, towards the end of learning large pertubations will almost always make things worse
+    -Backpropegation
+        -use the error derivatives with respect to activities
+        -each hidden unit can affect many outputs at the same time, combine all of those errors
+        -use the errors from the current layer to calculate the error in the previous layer
+        -derivative of the erro with respect to a weight in a hidden layer: multiply the derivative of the erro of the layer above by the activation of the current layer
+Using derivatives of backpropegation
+    -Full batch: add all the error derivatives to get the exact error, inefficient on large datasets
+    -Mini-batch: only use a small sample of the training data to get a general sense of the direction of the error derivative
+    -Adapt the learning rate: more sensible than fixed learning rate, have computer adjust learning rate if you are oscilating or making steady progress
+    -Overfitting
+        -Training data contains noise
+        -Sampling error: accidental regularities in the data becuase of the particular examples
+        -A model can't tell the difference between accidental and real regularities and it will fit both of them
+        -Powerful model will be very good at fitting only the training data
+    -A model is convincing when it fits a lot of data well
+    -Reduce overfitting
+        -Weight decay: keep the weights small or many zero, simpler model
+        -Weight sharing: the network is simple because the weights are shared (the same for multiple connections)
+        -Early stopping: check if performance on test set is getting worse and stop when it does
+        -Model averaging: train many different networks and average them
+        -Bayesian fitting: fancy model averaging
+        -Dropout: randomly ommit hidden units while training the network
+        -Generative pre-trainig
+    
