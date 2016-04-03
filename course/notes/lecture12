@@ -1,0 +1,59 @@
+Boltzmann Machine learning algorithm
+    -unsupervised learning, just give it an input vector, build a model of a set of input vectors
+    -maximize the product of the probabilities that the BM assigns to the binary vectors in the training set
+    -maximize sum of the log probabilities
+    -one weight needs to know about other weights
+    -d logp(v)/d wij = si*sj (at thermal equlibrium when v is clamped)-si*sj (when v is not clamped)
+    -settleing to equlibrium  propegates information about the weights
+    -we need to settle with data and without data
+    -inefficient way to collect statistics
+        -positive phase: clamp visible vector and let the net settle, sample si*sj for every connected pair of units, repeat for all data vectors
+        -negative phase: set all units randomly, get net to settle, sample the correlation of every pair of units i and j, repeat to get good estimates
+Speed up Boltzmann Machine learning algorithm
+    -if starting at random state, may be long time before reaching equlibrium
+    -hard to tell if at equlibrium
+    -particle: store a state of the hidden units, gives a warm starting
+        -if you were at equlibrium before and weights only updated a little bit, only take a few updates to get back to equlibrium
+    -use particles for positive and negative phase
+    -positive phase: keep data-specific particles (one per training case), update all the hidden units with each datavector clamped, average sisj orver all data-specific particles
+    -negative phase: fantasy particles (global configurations), after a weight update update all units in each fantasy particle a few times, average sisj over al fantasy particles
+    -delta wij proportial to sisj data - sisj model
+    -difficult to apply to mini-batches
+    -make a strong assumption: for a given data vector, there aren't two different very different explanations for the data vector
+    -model will give one datapoint from each point of data
+    -mean field approximation
+        -update units stochasticall and sequentially
+        -replace binary with real value probability
+        -not quite right but it works pretty well
+        -kill oscillations using damped mean field
+        -positive phase: initialize probabilities to .5, update until probabilities stop changing, record pipj for connected units and average over all data in mini-batch
+        -negative phase: same as before
+    -parallel updates using a specific architecture
+    -Deep Boltzmann Machine
+        -no connections within a layer, no skip-layer connections
+        -update the states of every unit in every other layer at the same time, given the states of the layers in between
+Restricted Boltzmann Machine
+    -restrict connectivity to make learning and inference easier
+    -one layer of hidden units
+    -no connections between hidden units
+    -no connections between visible units
+    -only takes one step to reach equlibrium when visible units are clamped
+        -p(hj = 1) = 1/(1+e^(-b-sum(vi*wij)))
+        -compute probabilities in parallel
+    -PCD: efficient mini-batch learning for RBM
+        -positive phase: compute exact value of vi*hj and average that value over all data in mini-batch
+        -negative phase: fantasy particles, update particles several times using alternating parallel updates, average vi*hj over all fantasy particles
+    -Contrastive Divergence
+        -from data->generate hidden state->generate visible state (reconstruction)->generate hidden state
+        -measure statistics, delta wij = e*(vi*hj0-vi*hj1)
+        -works because see dirn it is wandering in after a few steps
+        -fails when worrying about regions far away from the data
+RBMs for collaborative filtering
+    -netflix competition, how much a user rated an omited movie given ratings for other movies
+    -like a language model, use tripple of user, movie, rating
+    -using an RBM
+        -treat each user as a training case, vector of movie ratings, visible unit per movie is a 5 way softmax
+        -deal with missing ratings: only have visible units for the movies the user rated
+        -all RBMs use the same hidden weights, lots of weight sharing
+        -each user only gets one training case
+        -winning group used many different RBM models that they averaged over

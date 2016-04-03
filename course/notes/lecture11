@@ -1,0 +1,78 @@
+Hopfield Nets
+    -storing memories as distributed patterns of activities
+    -binary threshold units with recurrent conenctions between them
+    -RNNs with non-linear units are generally very hard to analyze
+    -John Hopfield: symmetric connections->global energy function
+    -every neuron has a binary value in a configuration, the network has an energy
+    -binary threshold decision rule causes the network to settle to a minimum energy
+    -energy function
+        -sum of contributions
+        -contribution depends on a connection and the binary state of two neurons
+        -E = -sum(si*bias)-sum(si*sj*wij) where s is the binary state of a neuron
+        -quadratic energy function: each unit computed locally how it's state affects the global energy function
+        -Energy gap: (delta E) = E(si=0)-E(si=1) = bias+sum(sj*wij)
+    -find an energy minimum: start at random state, update units randomly by chosing whichever state give the lowest global energy
+        -calculte the goodness of a neuron: add all the current connections, if positive->on, negative->off
+        -not necessarily the deepest energy minimum
+    -Decisions need to be sequential because simultaneous decision could make the energy go up
+    -Use this model to store memories, memory could be corrupted and the hopfield net could correct it
+    -Energy minima gives content-addressable memory, an item can be accessed just by knowing part of it
+    -robust against hardware damage
+    -like reconstructing a dinosaur from a few bones
+    -delta w = si*sj if using activities of (1,-1)
+Dealing with spurious minima
+    -two nearby minima combine to create a new minima in the wrong place
+    -Hopfield storage rule: N units can store .15 memories
+    -merging of energies limit the capacity, nearby minima merge->can't distingush the two memories
+    -unlearning: let the net settle from a random state, then unlearn
+        -get rid of spurious minima and increase memory capacity
+    -not storing what you are dreaming about, doing unlearning
+    -show that unlearning is the process of fitting the model to the data
+    -derive unlearning to minimize a cost function
+    -increasing capacity of a Hopfield net
+        -use perception convergnece procedure to train each unit to have the correct state given the states of other units
+        -for each training case, look at each unit and see if it would get to that state given the states of the other units, if not->update using perceptron learning
+        -can't do this with too many memories, won't converge
+Hopfield net with hidden units
+    -make the states of the hidden units rerpresent an interperitation of the visible units
+    -find a good interperitation of the input data
+    -construct interperitations of sensory input
+    -input is represented by the visible units
+    -interperate a line drawing
+        -each 2d line can correspond to many 3d lines, but only one of those 3d lines is correct
+        -3d lines support each other if they join in 3d
+            -two 2d lines meeting agree that they are the same depth at the connection point
+            -strong support if they join at right angles
+    -issues
+        -search: avoid getting trapped in poor local minima
+        -learning: learn the weights on the connections to the hidden units and between the hidden units
+    -find better minima with noise
+    -hopfield net makes decisions that make it impossible to escape local minima
+    -start with a lot of noise so it is easy to cross energy barriers, then decrease the noise
+    -slowly reducing the noise so that the system ends up in a deep minimum is simulated annealing
+    -high temperature transition probabilities: probability of going uphill is lower than going downhill but not much lower
+    -low temperature probabilities: lower probabilities but the ratio is much better, it will take a long time to get from uphill to downhill
+        -start at high temperature and move to a low temperature
+    -add noise to hopfield net: replace binary threshold with binary stochastic units that make biase random decisions
+        -temperature controls the amount of noise
+    -p(s=1) = 1/(a+e^(energy gap/Temperature))
+        -the sign of energy gap(delta E) determines on or off at temp of 0
+    -Thermal Equilibrium at a temp of 1
+        -the thing that settles down is the probability distribution over configurations, units might still be rattling around
+        -settles to stationary distribution
+        -start with any distribution we like over identical systems
+        -apply the stochastic update rule to pick the next configuration
+        -reach a situation where the fraction of systems in each configuration remains constant
+        -fraction of systems in any configuration doesn't change
+Boltzmann Machine modeling data
+    -model a set of binary data vectors
+    -given a set of binary vectors, fit a model that assigns a probability to every possible vector
+    -monitoring complex systems to detect unusual behavior, having never seen that state before
+    -probability of generating a visible vector is computed by summing over all possible hidden states
+    -Boltzmann machine is not a causal generative model
+    -everything is defined in terms of energies of configurations of visible and hidden units
+    -Energy of configuration defined in terms of a hidden state vector and a visible state vector
+    -p(v,h) = e^(E(v,h))/sum(e^-E(all possible configurations of the visible and hidden units))
+    -use MCMC for models with a lot of hidden units to get samples from the model, stochastic updates, run until thermal equilibrium, probability is related to its energy by the Boltzmann distribution
+    
+    
