@@ -74,5 +74,8 @@ Boltzmann Machine modeling data
     -Energy of configuration defined in terms of a hidden state vector and a visible state vector
     -p(v,h) = e^(E(v,h))/sum(e^-E(all possible configurations of the visible and hidden units))
     -use MCMC for models with a lot of hidden units to get samples from the model, stochastic updates, run until thermal equilibrium, probability is related to its energy by the Boltzmann distribution
-    
-    
+    -to calculate probabilities, evaluate energies in each state (2^N states)
+        -energies in each state are sum(Wij*si*sj) (0 added if si or sj are 0)
+        -raise e to the energy and sum all the energies
+        -divide each individual energy by the sum
+    -When talking about energy: -sum(Wij*si*sj)
