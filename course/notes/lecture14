@@ -1,0 +1,46 @@
+Stacking RBMs: learning Sigmoid belief nets
+    -efficient learning algorithm of RBMS
+    -first, train layer of features with input from pixels
+    -treat the activation of features and learn features of features
+    -improve variational lower bound on the log probability of generating training data
+    -combine RBMs to make a Deep belief net, low layers like belief net, top layers are RBMs (bi-directional)
+    -bottom up weights are used for inference
+    -averaging two factorial distribution
+        -don't get a factorial distribution
+        -averaging gets you a mixture factorial (average of resulting probabilies != probability of the average)
+    -p(v) = sum(p(h)*p(v|h))
+    -after learning layers of features, fine tune the features to improve generation
+    -DBN for modeling MNIST
+        -first two hidden layers are RBMs without labels
+        -add a big top layer and give it the 10 labels
+        -fine-tune the system to give a better generative model using contrastive wake-sleep
+Discriminative fine-tuning for DBN
+    -learn a layer at a time of stacked RBMs, treat it as pre-training for a NN, good set of weights
+    -use backprop to fine-tune a model to be better at discrimination (deciding)
+    -pre-training scales very well
+    -pre-training is less prone to overfitting because they are modeling the input vectors, contains more input than labels
+    -information in the labels is used in the fine tuning, after learning the precious features
+    -works well with little labeled data
+What happens during discriminative fine-tuning
+    -almost nothing changes in the early layers
+    -pre trainig, networks tend to be more similar
+    -no overlap between pretrained networks and randomly initialized stuff
+Modeling real-valued data with RBMs
+    -treated intermediat values as probabilies
+    -won't work for real images, intensity is almost always the average of the neighboring pixels
+    -mean field logistic units cannot represent precise intermediate values
+    -use a linear unit with gaussian noise
+    -have many more hidden units than visible units, actually need the number of hidden units to change
+    -Stepped sigmoid units
+        -make copies of stochastic binary unit
+        -all copies have the same weights and bias, different offset to the bias (-.5,-1.5,-2.5,ect.)
+        -get more units to turn on as we go
+        -approximate as a linear threshold unit
+        -use rectified linear units
+RBMs are infinite SBN
+    -RBM, lots of weight sharing, like a markov chain and SBN
+    -Top down pass is like letting an RBM settling to an equlibrium
+    -inference is as easy as generation
+    -small weights make the markov chain mix fast
+    
+    
