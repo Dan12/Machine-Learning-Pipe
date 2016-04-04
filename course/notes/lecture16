@@ -1,0 +1,40 @@
+Joint model of images and captions
+    -train a model on the images
+    -train a model of the word count from the captions
+    -added a new top layer that is connected to the top layer of individual models
+    -the further trained the whole system
+    -used a deep Boltzmann Machine
+    -pretrain a Deep Boltzmann Machine
+        -bottom up weights are 2 times as big as their top-down counterparts, scaled symmetric weights
+Hierarchical coordinate frames
+    -CNNs, loose precise spatial relationships, necessary for very high level features
+    -people are good at extracting, after seeing a shape once we can recoginize it at other viewpoints
+    -use hierarchical coordinate frame
+        -use a group of neurons to represent the conjunction of the shape of a feature and its pose relative to the retina
+        -pose is relative, relationship between the coordinate frame of the object and the coordinate frame of the retina
+        -use relationship between parts to recoginize larger objects
+        -inverse computer graphics (use the pose of the mouth and pose of a nose to get the pose of a face if they agree)
+        -spatial transformations modeled by linear operations
+        -learn hierarchicy of visual entities
+        -invariant geometric properties are in the weights, as the pose changes the activites should changes
+    -our visual systems impose coordinate frame in order to represent shapes
+Bayesian optomization of hyper-parameters
+    -sample random combinations, some parameters will have much effect and some wont
+    -look at current results and try and predict good combinations
+    -predict how well and the uncertainty of a new prediction
+    -Gaussian Process models: assume simialr inputs give similar outputs
+        -very weak but sensible prior of effects of hyper-parameters
+        -lean the appropriate scale for measuring similarity
+        -set a scale for the dimension to measure the similarity of that dimension
+        -predict a gaussian distribution of values
+        -low variance for predictions close to what we have seen and vice versa for predictions we haven't seen
+    -Method
+        -keep track of best setting
+        -each experiment might stay the same or it might improve
+        -pick parameters such that the expected improvement is big
+    -better than person at finding hyper-parameters given many resources
+    -keeps track of all trends that a person might miss
+Fog of progress
+    -Development of technology is exponential
+    -can't see too far into the future or make long term predictions
+    
