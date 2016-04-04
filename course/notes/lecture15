@@ -1,0 +1,53 @@
+Principal Components Analysis
+    -n dimensional data, find M orthoganal directions in which the data has the msot variance (M<N)
+    -lower dimensional subspace
+    -prepresent N-D datapoints by projecting them onto the M principal dirns
+    -doesn't loose that much data
+    -reconstruct data: use the mean value of N-M directions not represents
+    -loss in reconstruction is difference between value of the data point and the mean value of all data points
+    -implement PCA using backprop
+        -output is the reconstruction, network has central bottlneck (M hidden units)
+        -hidden unit is the bottleneck
+        -M hidden units will span the same space as M components in PCA, might be skewed and rotated
+        -less efficient than PCA
+        -generalize PCA, layers before and after the code layer, PCA but non-linear
+        -encoder and decoders, use supervised learning technique for unsupervised learning
+Deep Autonecoders
+    -do non-linear dimensionality reduction
+    -encoding model should be fairly fast
+    -use unsupervised layer by layer pretraining, or careful weight intialization
+    -MNIST digits, pretrain layers with RBMs
+Deep autoencoders for document retrieval
+    -convert each doc into a bag of words, word count ignoring order
+    -reduce document vector (2000) using autoencoder to just 10 numbers, use those numbers to compare documents
+    -normailze bag of words vector, probability vector (add up to 1)
+    -train with RBMs. fine-tune using backprop, much better than PCA
+Semantic Hashing
+    -getting binary codes from the word counts of documents
+    -add noise to inputs in fine tuning, noise forces activites to become either firmly on or off (no middle ground)
+    -binary features that are good features
+    -treat the code like a memory address, use autoencoder as a hash function to transform document to a memory address
+    -look at nearby addresses of query document to find similar documents
+    -much more efficient than searching through all documents at the same time
+Binary codes for image retrieval
+    -semantic hashing can get good short lists
+    -extract a vector with information about the image (binary image)
+    -extract short binary code to get a few images
+    -use 256-bit binary codes to do a serial search for good matches
+    -Krizhevsky: 32*32 color images to 256 bit binary codes
+    -other approach:
+        -use a big net to recognize lots of different types of objects in real images (classification net)
+        -use activity vector of last hidden layer as the representation of the image and train an autoencoder on those activites to get binary codes
+        -do image similaritiy lookup using the binary codes
+        -could combine with labels to get better representation
+Shallow autoencoders for pre-training
+    -shallow autoencoders (similar to RBM with contrastive divergence), one hidden layer
+    -this pre-training is not as effective
+    -Denoising autoencoders, add noise to the input vector (stochastically) by setting many components to 0 (like dropout for inputs)
+    -still required to reconstruct the original image, capture correlations between inputs
+    -Denoising autoencoders used as pre-training if very effective
+    -Contractive autoencoder
+        -hidden activites be insensitive to the inputs
+        -penalize the squared gradient of each hidden activity w.r.t the inputs
+        -work well for pre-training, acts like a sparse code
+    -brain has huge amounts of parameters compared to the amount of data, some regularization needed
