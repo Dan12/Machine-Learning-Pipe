@@ -13,7 +13,7 @@ Ups and downs of backpropegation
     -Support vector machines
         -expand the input to a very large layer of non linear non adaptive features, one layer of adaptive weights, efficient control of overfitting
         -can't learn multiple layers of representation with SVM
-Belief Nets
+Belief Nets (link: https://share.coursera.org/wiki/index.php/Lecture_13b_-_The_math_of_Sigmoid_Belief_Networks)
     -deep networks, learning time does not scale well, requires lots of labeled data, can get stuck in poor local optima
     -use unsupervised learning to overcome some of the limitations of backprop
     -use the method for modeling the structure of the input, not for the relationship between the input and output

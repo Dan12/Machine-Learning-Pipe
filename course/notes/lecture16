@@ -18,7 +18,7 @@ Hierarchical coordinate frames
         -learn hierarchicy of visual entities
         -invariant geometric properties are in the weights, as the pose changes the activites should changes
     -our visual systems impose coordinate frame in order to represent shapes
-Bayesian optomization of hyper-parameters
+Bayesian optomization of hyper-parameters (link: https://papers.nips.cc/paper/4522-practical-bayesian-optimization-of-machine-learning-algorithms.pdf)
     -sample random combinations, some parameters will have much effect and some wont
     -look at current results and try and predict good combinations
     -predict how well and the uncertainty of a new prediction
