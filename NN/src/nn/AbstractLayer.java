@@ -9,10 +9,10 @@ import no.uib.cipr.matrix.Matrix;
 public abstract class AbstractLayer{
 
     // called with information from previous layer, calculates activations, and sends them to the next layer
-    abstract void feedForward(DenseMatrix activations);
+    abstract void feedForward(Matrix activations, Matrix target);
     
     // called with errors from previous layer, calculated new errors and sends those back
-    abstract void backProp();
+    abstract void backProp(Matrix errors);
     
     // connect this layer with the next layer
     // have to call return pipe on next layer to create doubly linked nodes
@@ -23,6 +23,8 @@ public abstract class AbstractLayer{
     
     // return layer size
     abstract int getSize();
+    
+    abstract boolean hasBias();
     
     // test methods
     abstract void test();

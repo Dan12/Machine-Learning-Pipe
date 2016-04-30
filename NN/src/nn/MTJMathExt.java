@@ -21,8 +21,13 @@ public class MTJMathExt{
     }
     
     // Calculate derivative of sigmoid for all values in z
-    public static Matrix sigmoidGradient(Matrix z){
+    public static Matrix sigmoidGradientZ(Matrix z){
         return MTJOpExt.timesExtend(sigmoidEx(z), invSigmoidEx(z));
+    }
+    
+    // Calculate derivative of sigmoid for all values in a (sigmoid(z))
+    public static Matrix sigmoidGradientA(Matrix a){
+        return MTJOpExt.timesExtend(a, MTJOpExt.minusExtend(MTJCreateExt.single(1.0),a));
     }
     
     // Calculate sigmoid with BigDeciaml, high precision

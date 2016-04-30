@@ -25,18 +25,33 @@ class InputLayer extends AbstractLayer{
     }
     
     // called with information from previous layer, calculates activations, and sends them to the next layer
-    public void feedForward(DenseMatrix activations){
-        this.outputLayer.feedForward(activations);
+    public void feedForward(Matrix activations, Matrix target){
+        // number of training cases
+        int m = activations.numRows();
+        
+        if(this.bias)
+            this.activations = MTJConcat.concat(MTJCreateExt.Ones(m,1), activations, 1);
+        else
+            this.activations = activations;
+        
+        this.outputLayer.feedForward(activations, target);
     }
     
     // called with errors from previous layer, calculated new errors and sends those back
-    public void backProp(){
-        
+    public void backProp(Matrix errors){
+        // if the upper layer had a bias, cut that column out of the error term
+        if(this.outputLayer.hasBias())
+            this.gradients = MTJCreateExt.splitMatrix(errors, 0, -1, 1, -1).transAmult(this.activations);
+        else
+            this.gradients = errors.transAmult(this.activations);
+            
+        // call backprop on the previous layer with this layer's error
+        // this.inputLayer.backProp(MTJOpExt.timesExtend(errors.mult(this.weightMatrix.getMatrix()), MTJMathExt.sigmoidGradientA(this.activations)));   
     }
     
     public void pipe(AbstractLayer nextLayer){
         this.outputLayer = nextLayer;
-        this.weightMatrix = new WeightMatrix(this.size, this.outputLayer.getSize());
+        this.weightMatrix = new WeightMatrix(this.size + (this.bias ? 1 : 0), this.outputLayer.getSize());
         this.outputLayer.returnPipe(this);
     }
     
@@ -49,8 +64,8 @@ class InputLayer extends AbstractLayer{
         return this.size;
     }
     
-    // calculate the sigmoid of the matrix a
-    private DenseMatrix sigmoid(DenseMatrix a){
-        return null;
+    public boolean hasBias(){
+        return this.bias;
     }
+    
 }
