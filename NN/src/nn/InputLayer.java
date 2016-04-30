@@ -6,8 +6,8 @@ import no.uib.cipr.matrix.Matrix;
 class InputLayer extends AbstractLayer{
     
     private int size;
-    private DenseMatrix activations;
-    private DenseMatrix gradients;
+    private Matrix activations;
+    private Matrix gradients;
     
     private AbstractLayer outputLayer;
     private WeightMatrix weightMatrix;
@@ -39,11 +39,12 @@ class InputLayer extends AbstractLayer{
     
     // called with errors from previous layer, calculated new errors and sends those back
     public void backProp(Matrix errors){
+        
         // if the upper layer had a bias, cut that column out of the error term
         if(this.outputLayer.hasBias())
-            this.gradients = MTJCreateExt.splitMatrix(errors, 0, -1, 1, -1).transAmult(this.activations);
+            this.gradients = MTJCreateExt.splitMatrix(errors, 0, -1, 1, -1).transAmult((DenseMatrix) this.activations, new DenseMatrix(this.weightMatrix.getMatrix().numRows(), this.weightMatrix.getMatrix().numColumns()));
         else
-            this.gradients = errors.transAmult(this.activations);
+            this.gradients = errors.transAmult(this.activations, new DenseMatrix(this.weightMatrix.getMatrix().numRows(), this.weightMatrix.getMatrix().numColumns()));
             
         // call backprop on the previous layer with this layer's error
         // this.inputLayer.backProp(MTJOpExt.timesExtend(errors.mult(this.weightMatrix.getMatrix()), MTJMathExt.sigmoidGradientA(this.activations)));   

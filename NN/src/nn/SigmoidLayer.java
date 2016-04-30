@@ -41,19 +41,19 @@ class SigmoidLayer extends AbstractLayer{
             this.outputLayer.feedForward(this.activations, target);
         // if this is the output, start going backwards
         else
-            this.inputLayer.backProp(MTJOpExt.minusExtend(this.activations, target)));
+            this.inputLayer.backProp(MTJOpExt.minusExtend(this.activations, target));
     }
     
     // called with errors from previous layer, calculated new errors and sends those back
     public void backProp(Matrix errors){
         // if the upper layer had a bias, cut that column out of the error term
         if(this.outputLayer.hasBias())
-            this.gradients = MTJCreateExt.splitMatrix(errors, 0, -1, 1, -1).transAmult(this.activations);
+            this.gradients = MTJCreateExt.splitMatrix(errors, 0, -1, 1, -1).transAmult(this.activations, new DenseMatrix(this.weightMatrix.getMatrix().numRows(), this.weightMatrix.getMatrix().numColumns()));
         else
-            this.gradients = errors.transAmult(this.activations);
+            this.gradients = errors.transAmult(this.activations, new DenseMatrix(this.weightMatrix.getMatrix().numRows(), this.weightMatrix.getMatrix().numColumns()));
             
         // call backprop on the previous layer with this layer's error
-        this.inputLayer.backProp(MTJOpExt.timesExtend(errors.mult(this.weightMatrix.getMatrix()), MTJMathExt.sigmoidGradientA(this.activations)));  
+        this.inputLayer.backProp(MTJOpExt.timesExtend(errors.mult(this.weightMatrix.getMatrix(), new DenseMatrix(this.activations.numRows(), this.activations.numColumns())), MTJMathExt.sigmoidGradientA(this.activations)));
     }
     
     // connect this layer to the next layer, called with next layer so return this layer with returnPipe
