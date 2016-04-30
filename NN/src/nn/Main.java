@@ -7,11 +7,11 @@ public class Main{
         
         TestClass.testmethod();
         
-        InputLayer i = new InputLayer(5);
+        InputLayer i = new InputLayer(5, false);
         
         i.test();
         
-        i.pipe(new SigmoidLayer(5));
+        i.pipe(new SigmoidLayer(5, false));
     }
     
 }

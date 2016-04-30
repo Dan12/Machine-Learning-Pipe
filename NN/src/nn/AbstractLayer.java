@@ -1,5 +1,8 @@
 package nn;
 
+import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.Matrix;
+
 // the class should keep track of the input and output layers
 // the class should keep track of activations
 
@@ -13,10 +16,10 @@ public abstract class AbstractLayer{
     
     // connect this layer with the next layer
     // have to call return pipe on next layer to create doubly linked nodes
-    abstract void pipe(Layer nextLayer);
+    abstract void pipe(AbstractLayer nextLayer);
     
     // connect this layer with the previous layer
-    abstract void returnPipe(Layer previousLayer);
+    abstract void returnPipe(AbstractLayer previousLayer);
     
     // return layer size
     abstract int getSize();

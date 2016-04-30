@@ -9,7 +9,7 @@ class InputLayer extends AbstractLayer{
     private DenseMatrix activations;
     private DenseMatrix gradients;
     
-    private Layer outputLayer;
+    private AbstractLayer outputLayer;
     private WeightMatrix weightMatrix;
     
     private boolean bias;
@@ -34,13 +34,13 @@ class InputLayer extends AbstractLayer{
         
     }
     
-    public void pipe(Layer nextLayer){
+    public void pipe(AbstractLayer nextLayer){
         this.outputLayer = nextLayer;
         this.weightMatrix = new WeightMatrix(this.size, this.outputLayer.getSize());
         this.outputLayer.returnPipe(this);
     }
     
-    public void returnPipe(Layer previousLayer){
+    public void returnPipe(AbstractLayer previousLayer){
         // nothing
         System.out.println("The input layer doesn't have a previous layer");
     }
@@ -51,6 +51,6 @@ class InputLayer extends AbstractLayer{
     
     // calculate the sigmoid of the matrix a
     private DenseMatrix sigmoid(DenseMatrix a){
-        
+        return null;
     }
 }

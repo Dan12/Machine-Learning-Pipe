@@ -47,9 +47,12 @@ public class MTJOpExt{
     //Extends element-wise operations even if matricies do not have same dimensions
     //0-add, 1-right sub, 2-mult, 3-right div, 4-pow, 5-log, 6-equals(==), 7-round, 8-modulo
     private static Matrix opExtend(Matrix a, Matrix b, int op){
+        
+        
         // if the columns and rows are equal, perform the element wise operation
         if(a.numColumns() == b.numColumns() && a.numRows() == b.numRows()){
             DenseMatrix result = new DenseMatrix(a, true);
+            // this is just a regular add or subtract
             if(op == 0)
                 result.add(b);
             else if(op == 1){
@@ -57,255 +60,91 @@ public class MTJOpExt{
                 invB.scale(-1);
                 result.add(invB);
             }
+            
+            // other than add/subtract, do elementwise
             else{
                 result = null;
                 double[][] retArr = new double[a.numRows()][a.numColumns()];
-                for(int r = 0; r < a.numRows(); r++){
-                    for(int c = 0; c < a.numColumns(); c++){
-                        if(op == 2)
-                            retArr[r][c] = a.get(r, c)*b.get(r, c);
-                        else if(op == 3)
-                            retArr[r][c] = a.get(r, c)/b.get(r, c);
-                        else if(op == 4)
-                            retArr[r][c] = Math.pow(a.get(r, c),b.get(r, c));
-                        else if(op == 5)
-                            retArr[r][c] = Math.log(a.get(r, c));
-                        else if(op == 6){
-                            if(a.get(r,c) == b.get(r,c))
-                                retArr[r][c] = 1;
-                            else
-                                retArr[r][c] = 0;
-                        }
-                        else if(op == 7)
-                            retArr[r][c] = Math.round(a.get(r,c));
-                        else if(op == 8)
-                            retArr[r][c] = ((int) a.get(r, c))%((int)b.get(r, c));
-                    }
-                }
+                for(int r = 0; r < a.numRows(); r++)
+                    for(int c = 0; c < a.numColumns(); c++)
+                        retArr[r][c] = opSwitch(op, a, b, r, c, r, c);
                 result = new DenseMatrix(retArr);
             }
             return result;
         }
+        
+        
         // if the columns are equal
         else if(a.numColumns() == b.numColumns()){
+            // a is the transpose vector (1*x)
             if(a.numRows() == 1){
                 double[][] retArr = new double[b.numRows()][b.numColumns()];
-                for(int r = 0; r < b.numRows(); r++){
-                    for(int c = 0; c < a.numColumns(); c++){
-                        switch(op){
-                            case 0:
-                                retArr[r][c] = a.get(0, c)+b.get(r,c);
-                                break;
-                            case 1:
-                                retArr[r][c] = a.get(0, c)-b.get(r,c);
-                                break;
-                            case 2:
-                                retArr[r][c] = a.get(0, c)*b.get(r,c);
-                                break;
-                            case 3:
-                                retArr[r][c] = a.get(0, c)/b.get(r,c);
-                                break;
-                            case 4:
-                                retArr[r][c] = Math.pow(a.get(0, c),b.get(r,c));
-                                break;
-                            case 6:
-                                if(a.get(0,c) == b.get(r,c))
-                                    retArr[r][c] = 1;
-                                else
-                                    retArr[r][c] = 0;
-                                break;
-                            case 8:
-                                retArr[r][c] = ((int) a.get(0, c))%((int)b.get(r, c));
-                                break;
-                        }
-                    }
-                }
+                for(int r = 0; r < b.numRows(); r++)
+                    for(int c = 0; c < a.numColumns(); c++)
+                        retArr[r][c] = opSwitch(op, a, b, 0, c, r, c);
                 return new DenseMatrix(retArr);
             }
+            // b is the transpose vector (1*x)
             else if(b.numRows() == 1){
                 double[][] retArr = new double[a.numRows()][a.numColumns()];
-                for(int r = 0; r < a.numRows(); r++){
-                    for(int c = 0; c < a.numColumns(); c++){
-                        switch(op){
-                            case 0:
-                                retArr[r][c] = a.get(r, c)+b.get(0,c);
-                                break;
-                            case 1:
-                                retArr[r][c] = a.get(r, c)-b.get(0,c);
-                                break;
-                            case 2:
-                                retArr[r][c] = a.get(r, c)*b.get(0,c);
-                                break;
-                            case 3:
-                                retArr[r][c] = a.get(r, c)/b.get(0,c);
-                                break;
-                            case 4:
-                                retArr[r][c] = Math.pow(a.get(r, c),b.get(0,c));
-                                break;
-                            case 6:
-                                if(a.get(r,c) == b.get(0,c))
-                                    retArr[r][c] = 1;
-                                else
-                                    retArr[r][c] = 0;
-                                break;
-                            case 8:
-                                retArr[r][c] = ((int) a.get(r, c))%((int)b.get(0, c));
-                                break;
-                        }
-                    }
-                }
+                for(int r = 0; r < a.numRows(); r++)
+                    for(int c = 0; c < a.numColumns(); c++)
+                        retArr[r][c] = opSwitch(op, a, b, r, c, 0, c);
                 return new DenseMatrix(retArr);
             }
-            else{
+            else
                 throw new IllegalArgumentException("No Good Arguments.");
-            }
         }
+        
+        
+        // if the rows are equal
         else if(a.numRows() == b.numRows()){
+            // a is the vector
             if(a.numColumns() == 1){
                 double[][] retArr = new double[b.numRows()][b.numColumns()];
-                for(int r = 0; r < a.numRows(); r++){
-                    for(int c = 0; c < b.numColumns(); c++){
-                        switch(op){
-                            case 0:
-                                retArr[r][c] = a.get(r, 0)+b.get(r,c);
-                                break;
-                            case 1:
-                                retArr[r][c] = a.get(r, 0)-b.get(r,c);
-                                break;
-                            case 2:
-                                retArr[r][c] = a.get(r, 0)*b.get(r,c);
-                                break;
-                            case 3:
-                                retArr[r][c] = a.get(r, 0)/b.get(r,c);
-                                break;
-                            case 4:
-                                retArr[r][c] = Math.pow(a.get(r, 0),b.get(r,c));
-                                break;
-                            case 6:
-                                if(a.get(r,0) == b.get(r,c))
-                                    retArr[r][c] = 1;
-                                else
-                                    retArr[r][c] = 0;
-                                break;
-                            case 8:
-                                retArr[r][c] = ((int) a.get(r, 0))%((int)b.get(r, c));
-                                break;
-                        }
-                    }
-                }
+                for(int r = 0; r < a.numRows(); r++)
+                    for(int c = 0; c < b.numColumns(); c++)
+                        retArr[r][c] = opSwitch(op, a, b, r, 0, r, c);
                 return new DenseMatrix(retArr);
             }
+            // b is the vector
             else if(b.numColumns() == 1){
                 double[][] retArr = new double[a.numRows()][a.numColumns()];
-                for(int r = 0; r < a.numRows(); r++){
-                    for(int c = 0; c < a.numColumns(); c++){
-                        switch(op){
-                            case 0:
-                                retArr[r][c] = a.get(r, c)+b.get(r,0);
-                                break;
-                            case 1:
-                                retArr[r][c] = a.get(r, c)-b.get(r,0);
-                                break;
-                            case 2:
-                                retArr[r][c] = a.get(r, c)*b.get(r,0);
-                                break;
-                            case 3:
-                                retArr[r][c] = a.get(r, c)/b.get(r,0);
-                                break;
-                            case 4:
-                                retArr[r][c] = Math.pow(a.get(r, c),b.get(r,0));
-                                break;
-                            case 6:
-                                if(a.get(r,c) == b.get(r,0))
-                                    retArr[r][c] = 1;
-                                else
-                                    retArr[r][c] = 0;
-                                break;
-                            case 8:
-                                retArr[r][c] = ((int) a.get(r, c))%((int)b.get(r, 0));
-                                break;
-                        }
-                    }
-                }
+                for(int r = 0; r < a.numRows(); r++)
+                    for(int c = 0; c < a.numColumns(); c++)
+                        retArr[r][c] = opSwitch(op, a, b, r, c, r, 0);
                 return new DenseMatrix(retArr);
             }
-            else{
+            else
                 throw new IllegalArgumentException("No Good Arguments.");
-            }
         }
+        
+        
+        // a is a 1*1
         else if(a.numRows() == 1 && a.numColumns() == 1){
             double[][] retArr = new double[b.numRows()][b.numColumns()];
-            for(int r = 0; r < b.numRows(); r++){
-                for(int c = 0; c < b.numColumns(); c++){
-                    switch(op){
-                        case 0:
-                            retArr[r][c] = a.get(0, 0)+b.get(r,c);
-                            break;
-                        case 1:
-                            retArr[r][c] = a.get(0, 0)-b.get(r,c);
-                            break;
-                        case 2:
-                            retArr[r][c] = a.get(0, 0)*b.get(r,c);
-                            break;
-                        case 3:
-                            retArr[r][c] = a.get(0, 0)/b.get(r,c);
-                            break;
-                        case 4:
-                            retArr[r][c] = Math.pow(a.get(0, 0),b.get(r,c));
-                            break;
-                        case 6:
-                            if(a.get(0,0) == b.get(r,c))
-                                retArr[r][c] = 1;
-                            else
-                                retArr[r][c] = 0;
-                            break;
-                        case 8:
-                            retArr[r][c] = ((int) a.get(0, 0))%((int)b.get(r, c));
-                            break;
-                    }
-                }
-            }
+            for(int r = 0; r < b.numRows(); r++)
+                for(int c = 0; c < b.numColumns(); c++)
+                    retArr[r][c] = opSwitch(op, a, b, 0, 0, r, c);
             return new DenseMatrix(retArr);
         }
+        
+        // b is a 1*1
         else if(b.numRows() == 1 && b.numColumns() == 1){
             double[][] retArr = new double[a.numRows()][a.numColumns()];
             for(int r = 0; r < a.numRows(); r++){
                 for(int c = 0; c < a.numColumns(); c++){
-                    switch(op){
-                        case 0:
-                            retArr[r][c] = a.get(r, c)+b.get(0,0);
-                            break;
-                        case 1:
-                            retArr[r][c] = a.get(r, c)-b.get(0,0);
-                            break;
-                        case 2:
-                            retArr[r][c] = a.get(r, c)*b.get(0,0);
-                            break;
-                        case 3:
-                            retArr[r][c] = a.get(r, c)/b.get(0,0);
-                            break;
-                        case 4:
-                            retArr[r][c] = Math.pow(a.get(r, c),b.get(0,0));
-                            break;
-                        case 6:
-                            if(a.get(r,c) == b.get(0,0))
-                                retArr[r][c] = 1;
-                            else
-                                retArr[r][c] = 0;
-                            break;
-                        case 8:
-                            retArr[r][c] = ((int) a.get(r, c))%((int)b.get(0, 0));
-                            break;
-                    }
+                    retArr[r][c] = opSwitch(op, a, b, r, c, 0, 0);
                 }
             }
             return new DenseMatrix(retArr);
         }
         else
             throw new IllegalArgumentException("No Good Arguments.");
+            
     }
     
-    private double opSwitch(int op, DenseMatrix a, DenseMatrix b, ar, ac, br, bc){
+    private static double opSwitch(int op, Matrix a, Matrix b, int ar, int ac, int br, int bc){
         switch(op){
             // addition
             case 0:
@@ -316,14 +155,12 @@ public class MTJOpExt{
             // multiplication
             case 2:
                 return a.get(ar, ac)*b.get(br, bc);
-                break;
             // division
             case 3:
                 return a.get(ar, ac)/b.get(br, bc);
             // power
             case 4:
                 return Math.pow(a.get(ar, ac),b.get(br, bc));
-                break;
             // natural log of first matrix
             case 5:
                 return Math.log(a.get(ar, ac));
@@ -331,12 +168,14 @@ public class MTJOpExt{
             case 6:
                 return a.get(ar,ac) == b.get(br, bc) ? 1 : 0;
             // round first matrix
-            case 7
+            case 7:
                 return Math.round(a.get(ar, ac));
             // modulo
-            case 8
+            case 8:
                 return ((int) a.get(ar, ac))%((int) b.get(br, bc));
         }
+        
+        throw new IllegalArgumentException("No Good Arguments in Operation Switch. No good Operation.");
         
     }
     

@@ -9,12 +9,16 @@ class SigmoidLayer extends AbstractLayer{
     private DenseMatrix activations;
     private DenseMatrix gradients;
     
-    private Layer outputLayer;
-    private Layer inputLayer;
+    private AbstractLayer outputLayer;
+    private AbstractLayer inputLayer;
     private WeightMatrix weightMatrix;
     
-    public SigmoidLayer(int size){
+    private boolean bias;
+    
+    public SigmoidLayer(int size, boolean bias){
         this.size = size;
+        
+        this.bias = bias;
     }
     
     public void test(){
@@ -24,10 +28,10 @@ class SigmoidLayer extends AbstractLayer{
     // called with activations from previous layer, calculates activations, and sends them to the next layer
     public void feedForward(DenseMatrix activations){
         // 
-        this.outputLayer.feedForward(
+        this.outputLayer.feedForward((DenseMatrix)
             activations.transBmult(
             weightMatrix.getMatrix(), 
-            new DenseMatrix(activations.numRows(), this.size())));
+            new DenseMatrix(activations.numRows(), this.size)));
     }
     
     // called with errors from previous layer, calculated new errors and sends those back
@@ -36,14 +40,14 @@ class SigmoidLayer extends AbstractLayer{
     }
     
     // connect this layer to the next layer, called with next layer so return this layer with returnPipe
-    public void pipe(Layer nextLayer){
+    public void pipe(AbstractLayer nextLayer){
         this.outputLayer = nextLayer;
         this.weightMatrix = new WeightMatrix(this.size, this.outputLayer.getSize());
         this.outputLayer.returnPipe(this);
     }
     
     // called by node with this input piped to it;
-    public void returnPipe(Layer previousLayer){
+    public void returnPipe(AbstractLayer previousLayer){
         this.inputLayer = previousLayer;
     }
     
