@@ -14,46 +14,57 @@ class InputLayer extends AbstractLayer{
     
     private boolean bias;
     
-    public InputLayer(int size, boolean bias){
+    private AbstractRegularization weightRegularization;
+    
+    public InputLayer(int size, boolean bias, AbstractRegularization weightReg){
         this.size = size;
         
         this.bias = bias;
-    }
-    
-    public void test(){
-        System.out.println("Input with size "+this.size);
+        
+        this.weightRegularization = weightReg;
     }
     
     // called with information from previous layer, calculates activations, and sends them to the next layer
-    public void feedForward(Matrix activations, Matrix target){
+    public double feedForward(Matrix input){
         // number of training cases
         int m = activations.numRows();
         
         if(this.bias)
-            this.activations = MTJConcat.concat(MTJCreateExt.Ones(m,1), activations, 1);
+            this.activations = MTJConcat.concat(MTJCreateExt.Ones(m,1), input, 1);
         else
-            this.activations = activations;
+            this.activations = input;
         
-        this.outputLayer.feedForward(activations, target);
+        return this.outputLayer.feedForward(this.activations) + this.weightRegularization.regularizeCost(this.weightMatrix.getMatrix(), this.bias);
     }
     
     // called with errors from previous layer, calculated new errors and sends those back
-    public void backProp(Matrix errors){
+    public Matrix backProp(Matrix errors){
+        int m = this.activations.numRows();
         
         // if the upper layer had a bias, cut that column out of the error term
         if(this.outputLayer.hasBias())
             this.gradients = MTJCreateExt.splitMatrix(errors, 0, -1, 1, -1).transAmult((DenseMatrix) this.activations, new DenseMatrix(this.weightMatrix.getMatrix().numRows(), this.weightMatrix.getMatrix().numColumns()));
         else
             this.gradients = errors.transAmult(this.activations, new DenseMatrix(this.weightMatrix.getMatrix().numRows(), this.weightMatrix.getMatrix().numColumns()));
-            
-        // call backprop on the previous layer with this layer's error
-        // this.inputLayer.backProp(MTJOpExt.timesExtend(errors.mult(this.weightMatrix.getMatrix()), MTJMathExt.sigmoidGradientA(this.activations)));   
+        
+        // regularize
+        this.gradients.add(this.weightRegularization.regularizeGradient(this.weightMatrix.getMatrix(), this.bias));
+        
+        this.gradients.scale(1.0/m);
+        
+        return MTJCreateExt.toVector(this.gradients);
     }
     
-    public void pipe(AbstractLayer nextLayer){
+    public void applyGradients(){
+        
+    }
+    
+    public AbstractLayer pipe(AbstractLayer nextLayer){
         this.outputLayer = nextLayer;
         this.weightMatrix = new WeightMatrix(this.size + (this.bias ? 1 : 0), this.outputLayer.getSize());
         this.outputLayer.returnPipe(this);
+        
+        return this.outputLayer;
     }
     
     public void returnPipe(AbstractLayer previousLayer){

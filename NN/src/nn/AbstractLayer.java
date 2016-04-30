@@ -9,14 +9,17 @@ import no.uib.cipr.matrix.Matrix;
 public abstract class AbstractLayer{
 
     // called with information from previous layer, calculates activations, and sends them to the next layer
-    abstract void feedForward(Matrix activations, Matrix target);
+    abstract double feedForward(Matrix input);
     
     // called with errors from previous layer, calculated new errors and sends those back
-    abstract void backProp(Matrix errors);
+    abstract Matrix backProp(Matrix target);
+    
+    // apply gradients
+    abstract void applyGradients();
     
     // connect this layer with the next layer
     // have to call return pipe on next layer to create doubly linked nodes
-    abstract void pipe(AbstractLayer nextLayer);
+    abstract AbstractLayer pipe(AbstractLayer nextLayer);
     
     // connect this layer with the previous layer
     abstract void returnPipe(AbstractLayer previousLayer);
@@ -25,7 +28,4 @@ public abstract class AbstractLayer{
     abstract int getSize();
     
     abstract boolean hasBias();
-    
-    // test methods
-    abstract void test();
 }

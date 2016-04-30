@@ -3,15 +3,16 @@ package nn;
 public class Main{
 
     public static void main(String[] args){
-        System.out.println("It works");
+        System.out.println("Initializing the epicness");
         
-        TestClass.testmethod();
+        Tests.testMTJExtensions();
         
-        InputLayer i = new InputLayer(5, false);
+        AbstractLayer inputLayer = new InputLayer(5, false, new L2Regularization(0.1));
         
-        i.test();
+        AbstractLayer outputLayer = inputLayer
+            .pipe(new HiddenLayer(5, false, new SigmoidActivation(), new L2Regularization(0.1)))
+            .pipe(new OutputLayer(5, false, new SigmoidActivation(), new L2Regularization(0.1), new SquaredError()));
         
-        i.pipe(new SigmoidLayer(5, false));
     }
     
 }

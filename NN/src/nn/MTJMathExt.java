@@ -1,8 +1,5 @@
 package nn;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.Matrix;
 
@@ -10,49 +7,6 @@ import no.uib.cipr.matrix.Matrix;
 public class MTJMathExt{
     
     public MTJMathExt(){}
-    
-    // BigDecimal Precision
-    private static final int precision = 100;
-    
-    // Calculate sigmoid of all values in z
-    public static Matrix sigmoid(Matrix z){
-        Matrix tempZ = new DenseMatrix(z,true);
-        return MTJOpExt.divideExtend(MTJCreateExt.single(1), MTJOpExt.plusExtend(MTJCreateExt.single(1), MTJOpExt.powExtend(MTJCreateExt.single(Math.E), tempZ.scale(-1))));
-    }
-    
-    // Calculate derivative of sigmoid for all values in z
-    public static Matrix sigmoidGradientZ(Matrix z){
-        return MTJOpExt.timesExtend(sigmoidEx(z), invSigmoidEx(z));
-    }
-    
-    // Calculate derivative of sigmoid for all values in a (sigmoid(z))
-    public static Matrix sigmoidGradientA(Matrix a){
-        return MTJOpExt.timesExtend(a, MTJOpExt.minusExtend(MTJCreateExt.single(1.0),a));
-    }
-    
-    // Calculate sigmoid with BigDeciaml, high precision
-    public static Matrix sigmoidEx(Matrix z){
-        double[][] retArr = new double[z.numRows()][z.numColumns()];
-        for(int r = 0; r < z.numRows(); r++){
-            for(int c = 0; c < z.numColumns(); c++){
-                BigDecimal exp = new BigDecimal(Math.exp(-z.get(r, c)));
-                retArr[r][c] = (new BigDecimal(1).divide(new BigDecimal(1).add(exp), precision, RoundingMode.HALF_UP)).doubleValue();
-            }
-        }
-        return new DenseMatrix(retArr);
-    }
-    
-    // Calculate 1-sigmoid with BigDecimal, high precision
-    public static Matrix invSigmoidEx(Matrix z){
-        double[][] retArr = new double[z.numRows()][z.numColumns()];
-        for(int r = 0; r < z.numRows(); r++){
-            for(int c = 0; c < z.numColumns(); c++){
-                BigDecimal exp = new BigDecimal(Math.exp(-z.get(r, c)));
-                retArr[r][c] = (new BigDecimal(1).subtract(new BigDecimal(1).divide(new BigDecimal(1).add(exp), precision, RoundingMode.HALF_UP))).doubleValue();
-            }
-        }
-        return new DenseMatrix(retArr);
-    }
     
     // return a matrix with the mean along specified dimension (1-rows, get x*1 matrix; 2-cols, get 1*x matrix)
     public static Matrix mean(Matrix a, int dim){
