@@ -1,7 +1,6 @@
 package nn;
 
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrix;
+import no.uib.cipr.matrix.*;
 
 // General Functions
 public class GeneralFunctions {

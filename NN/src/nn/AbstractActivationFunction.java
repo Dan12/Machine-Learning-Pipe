@@ -1,7 +1,6 @@
 package nn;
 
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrix;
+import no.uib.cipr.matrix.*;
 
 public abstract class AbstractActivationFunction{
     
@@ -9,9 +8,9 @@ public abstract class AbstractActivationFunction{
     abstract Matrix getActivation(Matrix z);
     
     // returns f'(z) where f is the activation function
-    abstract Matrix getDerivative(Matrix z);
+    abstract Matrix getRawDerivative(Matrix z);
     
     // returns g'(a) where a is a special matrix and g is a special derivative function
     // for sigmoid, a is activations and g is simplified derivative
-    abstract Matrix getSpecialDerivative(Matrix a);
+    abstract Matrix getActivationDerivative(Matrix a);
 }

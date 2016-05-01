@@ -1,7 +1,6 @@
 package nn;
 
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrix;
+import no.uib.cipr.matrix.*;
 
 public abstract class AbstractCostFunction{
     
@@ -9,5 +8,5 @@ public abstract class AbstractCostFunction{
     abstract double getCost(Matrix a, Matrix t);
     
     // get error of a given target t
-    abstract Matrix getError(Matrix a, Matrix t);
+    abstract Matrix getError(Matrix a, Matrix t, AbstractActivationFunction activation);
 }

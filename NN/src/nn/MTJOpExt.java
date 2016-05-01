@@ -1,7 +1,6 @@
 package nn;
 
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrix;
+import no.uib.cipr.matrix.*;
 
 // MTJ operation extensions
 public class MTJOpExt{
@@ -25,7 +24,7 @@ public class MTJOpExt{
     }
     
     public static Matrix powExtend(Matrix a, Matrix b){
-        return opExtend(a,b,4);
+        return opExtend(a, b, 4);
     }
     
     public static Matrix logExtend(Matrix a){
@@ -42,6 +41,18 @@ public class MTJOpExt{
     
     public static Matrix moduloExtend(Matrix a, Matrix b){
         return opExtend(a, b, 8);
+    }
+    
+    public static Matrix lessThanExtend(Matrix a, double b){
+        return opExtend(a, MTJCreateExt.single(b), 9);
+    }
+    
+    public static Matrix greaterThanExtend(Matrix a, double b){
+        return opExtend(a, MTJCreateExt.single(b), 10);
+    }
+    
+    public static Matrix specialZeroMultiplyRegular(Matrix a, Matrix b){
+        return opExtend(a, b, 11);
     }
     
     //Extends element-wise operations even if matricies do not have same dimensions
@@ -166,16 +177,25 @@ public class MTJOpExt{
                 return Math.log(a.get(ar, ac));
             // equals
             case 6:
-                return a.get(ar,ac) == b.get(br, bc) ? 1 : 0;
+                return a.get(ar, ac) == b.get(br, bc) ? 1 : 0;
             // round first matrix
             case 7:
                 return Math.round(a.get(ar, ac));
             // modulo
             case 8:
                 return ((int) a.get(ar, ac))%((int) b.get(br, bc));
+            // less than
+            case 9:
+                return a.get(ar, ac) < b.get(br, bc) ? 1 : 0;
+            // greater than
+            case 10:
+                return a.get(ar, ac) > b.get(br, bc) ? 1 : 0;
+            // does elementwise multiplication but treats 0's as 1's
+            case 11:
+                return a.get(ar, ac) != 0 ? a.get(ar, ac)*b.get(br, bc) : b.get(br, bc);
         }
         
-        throw new IllegalArgumentException("No Good Arguments in Operation Switch. No good Operation.");
+        throw new IllegalArgumentException("No Good Arguments in Operation Switch.");
         
     }
     

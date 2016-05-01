@@ -1,7 +1,6 @@
 package nn;
 
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrix;
+import no.uib.cipr.matrix.*;
 
 // the class should keep track of the input and output layers
 // the class should keep track of activations
@@ -28,4 +27,14 @@ public abstract class AbstractLayer{
     abstract int getSize();
     
     abstract boolean hasBias();
+    
+    abstract Matrix getActivations();
+    
+    // given unrolled gradients, reshape into own gradients and pass on the rest
+    abstract void setGradients(Matrix gradients);
+    
+    // given unrolled weights, reshape into own weights and pass on the rest
+    abstract void setWeights(Matrix weights);
+    
+    abstract Matrix getWeights();
 }

@@ -1,7 +1,6 @@
 package nn;
 
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrix;
+import no.uib.cipr.matrix.*;
 
 public class OutputLayer extends HiddenLayer{
     
@@ -12,26 +11,51 @@ public class OutputLayer extends HiddenLayer{
     
     private AbstractLayer inputLayer;
     
-    public OutputLayer(int size, AbstractActivationFunction activationFunc, AbstractRegularization weightReg, AbstractCostFunction costFunction){
-        super(size, false, activationFunc, weightReg);
+    public OutputLayer(int size, AbstractActivationFunction activationFunc, AbstractCostFunction costFunction){
+        super(size, false, activationFunc, null, null);
+        
+        this.activationFunction = activationFunc;
         
         this.costFunction = costFunction;
     }
     
     @Override
     public double feedForward(Matrix z, Matrix target){
-        
         int m = z.numRows();
         
         // calculate activations using the activation function
         this.activations = this.activationFunction.getActivation(z);
         
-        return this.costFunction.getCost(this.activations, target);
+        return (1.0/m)*this.costFunction.getCost(this.activations, target);
     }
     
     @Override
     public Matrix backProp(Matrix target){
-        
-        return this.inputLayer.backProp(this.costFunction.getError(this.activations, target));
+        return this.getInputLayer().backProp(this.costFunction.getError(this.activations, target, this.activationFunction));
+    }
+    
+    @Override
+    public void applyGradients(){
+        this.getInputLayer().applyGradients();
+    }
+    
+    @Override
+    public Matrix getActivations(){
+        return this.activations;
+    }
+    
+    @Override
+    public void setGradients(Matrix gradients){
+        this.getInputLayer().setGradients(gradients);
+    }
+    
+    @Override
+    public void setWeights(Matrix weights){
+        this.getInputLayer().setWeights(weights);
+    }
+    
+    @Override 
+    public Matrix getWeights(){
+        return this.getInputLayer().getWeights();
     }
 }

@@ -1,8 +1,6 @@
 package nn;
 
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrix;
-import no.uib.cipr.matrix.Matrices;
+import no.uib.cipr.matrix.*;
 
 import java.util.Random;
 

@@ -1,12 +1,38 @@
 package nn;
 
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrix;
+import no.uib.cipr.matrix.*;
 
 // MTJ math extensions
 public class MTJMathExt{
     
     public MTJMathExt(){}
+    
+    // return a matrix where the maximum value of a cell is maxVal
+    public static Matrix max(Matrix a, double maxVal){
+        double[][] mArr = GeneralFunctions.getMatrixArray(a);
+        int m = a.numRows();
+        int n = a.numColumns();
+        for(int r = 0; r < m; r++)
+            for(int c = 0; c < n; c++)
+                if(mArr[r][c] > maxVal)
+                    mArr[r][c] = maxVal;
+        
+        return new DenseMatrix(mArr);
+    }
+    
+    // return a matrix where the minimum value of a cell is minVal
+    public static Matrix min(Matrix a, double minVal){
+        double[][] mArr = GeneralFunctions.getMatrixArray(a);
+        int m = a.numRows();
+        int n = a.numColumns();
+        for(int r = 0; r < m; r++)
+            for(int c = 0; c < n; c++)
+                if(mArr[r][c] < minVal)
+                    mArr[r][c] = minVal;
+        
+        return new DenseMatrix(mArr);
+    }
+    
     
     // return a matrix with the mean along specified dimension (1-rows, get x*1 matrix; 2-cols, get 1*x matrix)
     public static Matrix mean(Matrix a, int dim){

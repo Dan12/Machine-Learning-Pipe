@@ -3,8 +3,7 @@ package nn;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrix;
+import no.uib.cipr.matrix.*;
 
 public class SigmoidActivation extends AbstractActivationFunction{
     
@@ -17,12 +16,12 @@ public class SigmoidActivation extends AbstractActivationFunction{
     }
     
     // returns f'(z) where f is the activation function
-    public Matrix getDerivative(Matrix z){
+    public Matrix getRawDerivative(Matrix z){
         return MTJOpExt.timesExtend(sigmoidEx(z), invSigmoidEx(z));
     }
     
     // returns g'(a) where a is activations and g is simplified derivative
-    public Matrix getSpecialDerivative(Matrix a){
+    public Matrix getActivationDerivative(Matrix a){
         return MTJOpExt.timesExtend(a, MTJOpExt.minusExtend(MTJCreateExt.single(1.0),a));
     }
     

@@ -1,7 +1,6 @@
 package nn;
 
-import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrix;
+import no.uib.cipr.matrix.*;
 
 public class TanhActivation extends AbstractActivationFunction{
     
@@ -15,12 +14,18 @@ public class TanhActivation extends AbstractActivationFunction{
     }
     
     // returns f'(z) where f is the tanh function
-    public Matrix getDerivative(Matrix z){
+    public Matrix getRawDerivative(Matrix z){
         return MTJOpExt.minusExtend(MTJCreateExt.single(1), MTJOpExt.powExtend(getActivation(z), MTJCreateExt.single(2)));
     }
     
     // returns g'(a)
-    public Matrix getSpecialDerivative(Matrix a){
+    public Matrix getActivationDerivative(Matrix a){
         return MTJOpExt.minusExtend(MTJCreateExt.single(1), MTJOpExt.powExtend(a, MTJCreateExt.single(2)));
+    }
+    
+    // Normalizes all features in a with the mean values in mu and the standard deviations in sig
+    // normalizes for tanh with values between [-1,1]
+    public static Matrix tanhFeatureNormalize(Matrix a, Matrix mu, Matrix sig){
+        return MTJOpExt.minusExtend(MTJOpExt.timesExtend(MTJMathExt.featureNormalize(a, mu, sig), MTJCreateExt.single(2)), MTJCreateExt.single(1));
     }
 }
