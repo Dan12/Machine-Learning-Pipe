@@ -21,6 +21,6 @@ public class Tests{
         
         AbstractLayer outputLayer = inputLayer
             .pipe(new HiddenLayer(5, false, new SigmoidActivation(), new L2Regularization(0.1)))
-            .pipe(new OutputLayer(5, new SigmoidActivation(), new L2Regularization(0.1), new SquaredError()));
+            .pipe(new OutputLayer(5, new SigmoidActivation(), new L2Regularization(0.2), new SquaredError()));
     }
 }
