@@ -28,42 +28,43 @@ class HiddenLayer extends AbstractLayer{
         this.weightRegularization = weightReg;
     }
     
-    // called with activations from previous layer, calculates activations, and sends them to the next layer
-    public double feedForward(Matrix input){
-        int m = input.numRows();
-        int n = this.size;
+    // called with raw values from previous layer, calculates activations, and sends them to the next layer
+    public double feedForward(Matrix z, Matrix target){
+        int m = z.numRows();
         
         // calculate activations using the activation function
-        Matrix a = this.activationFunction.getActivation(input.transBmult(this.weightMatrix.getMatrix(), new DenseMatrix(m, n)));
+        Matrix a = this.activationFunction.getActivation(z);
         
         if(this.bias)
             this.activations = MTJConcat.concat(MTJCreateExt.Ones(m,1),a,1);
+        else
+            this.activations = a;
 
-        return this.outputLayer.feedForward(this.activations) + this.weightRegularization.regularizeCost(this.weightMatrix.getMatrix(), this.bias);
-        
-        // // if this is the output, start going backwards
-        // else
-        //     this.inputLayer.backProp(MTJOpExt.minusExtend(this.activations, target));
+        return this.outputLayer.feedForward(this.activations.transBmult(this.weightMatrix.getMatrix(), new DenseMatrix(m, this.outputLayer.getSize())), target) + this.weightRegularization.regularizeCost(this.weightMatrix.getMatrix(), this.bias);
     }
     
     // called with errors from previous layer, calculated new errors and sends those back
     public Matrix backProp(Matrix errors){
+        // get the number of training cases
         int m = this.activations.numRows();
         
         // if the upper layer had a bias, cut that column out of the error term
+        // then use the error matrix to calculate the weight gradients (error'*activations)
         if(this.outputLayer.hasBias())
             this.gradients = MTJCreateExt.splitMatrix(errors, 0, -1, 1, -1).transAmult(this.activations, new DenseMatrix(this.weightMatrix.getMatrix().numRows(), this.weightMatrix.getMatrix().numColumns()));
         else
             this.gradients = errors.transAmult(this.activations, new DenseMatrix(this.weightMatrix.getMatrix().numRows(), this.weightMatrix.getMatrix().numColumns() ));
             
-        // regularize
+        // add regularization (if bias, first column will be all 0s)
         this.gradients.add(this.weightRegularization.regularizeGradient(this.weightMatrix.getMatrix(), this.bias));
         
+        // divide the gradients by number of training cases
         this.gradients.scale(1.0/m);
             
-        // call backprop on the previous layer with this layer's error
+        // call backprop on the previous layer with this layer's error ((error*weights).*activationGradient)
         Matrix unrolledGradients = this.inputLayer.backProp(MTJOpExt.timesExtend(errors.mult(this.weightMatrix.getMatrix(), new DenseMatrix(this.activations.numRows(), this.activations.numColumns())), this.activationFunction.getSpecialDerivative(this.activations)));
         
+        // return the unrolled input gradients concatenated with this layers gradients
         return MTJConcat.concat(unrolledGradients, MTJCreateExt.toVector(this.gradients), 2);
     }
     

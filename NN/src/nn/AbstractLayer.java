@@ -9,7 +9,7 @@ import no.uib.cipr.matrix.Matrix;
 public abstract class AbstractLayer{
 
     // called with information from previous layer, calculates activations, and sends them to the next layer
-    abstract double feedForward(Matrix input);
+    abstract double feedForward(Matrix z, Matrix target);
     
     // called with errors from previous layer, calculated new errors and sends those back
     abstract Matrix backProp(Matrix target);

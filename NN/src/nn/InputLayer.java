@@ -25,7 +25,7 @@ class InputLayer extends AbstractLayer{
     }
     
     // called with information from previous layer, calculates activations, and sends them to the next layer
-    public double feedForward(Matrix input){
+    public double feedForward(Matrix input, Matrix target){
         // number of training cases
         int m = activations.numRows();
         
@@ -34,14 +34,17 @@ class InputLayer extends AbstractLayer{
         else
             this.activations = input;
         
-        return this.outputLayer.feedForward(this.activations) + this.weightRegularization.regularizeCost(this.weightMatrix.getMatrix(), this.bias);
+        // calculate z in the forward pass
+        return this.outputLayer.feedForward(this.activations.transBmult(this.weightMatrix.getMatrix(), new DenseMatrix(m, this.outputLayer.getSize())), target) + this.weightRegularization.regularizeCost(this.weightMatrix.getMatrix(), this.bias);
     }
     
     // called with errors from previous layer, calculated new errors and sends those back
     public Matrix backProp(Matrix errors){
+        // get the number of test cases
         int m = this.activations.numRows();
         
         // if the upper layer had a bias, cut that column out of the error term
+        // then use the error matrix to calculate the weight gradients (error'*activations)
         if(this.outputLayer.hasBias())
             this.gradients = MTJCreateExt.splitMatrix(errors, 0, -1, 1, -1).transAmult((DenseMatrix) this.activations, new DenseMatrix(this.weightMatrix.getMatrix().numRows(), this.weightMatrix.getMatrix().numColumns()));
         else
